@@ -151,7 +151,7 @@ class CustomVideoPlayerController {
       videoPlayerController.pause();
       videoPlayerController.removeListener(_videoListeners);
       videoPlayerController = newSource;
-      if(widget.videoController!.videoPlayerController.value.isInitialized == false) {
+      if(videoPlayerController.value.isInitialized == false) {
         await videoPlayerController.initialize();
       }
       videoPlayerController.addListener(
