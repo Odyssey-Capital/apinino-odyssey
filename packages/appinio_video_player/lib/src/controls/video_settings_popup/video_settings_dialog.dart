@@ -41,9 +41,9 @@ class VideoSettingsDialog extends StatelessWidget {
                   .customVideoPlayerPopupSettings.popupTitleTextStyle,
             ),
             const SizedBox(
-              height: 8, 
+              height: 8,
             ),
-            /*Column(
+            Column(
               children: [
                 if (customVideoPlayerController.additionalVideoSources != null)
                   if (customVideoPlayerController
@@ -72,7 +72,7 @@ class VideoSettingsDialog extends StatelessWidget {
                   ),
                 ),
               ],
-            )*/
+            )
           ],
         ),
       ),

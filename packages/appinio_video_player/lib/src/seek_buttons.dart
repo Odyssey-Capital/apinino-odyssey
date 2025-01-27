@@ -1,10 +1,9 @@
 import 'package:appinio_video_player/appinio_video_player.dart';
-import 'package:appinio_video_player/src/custom_video_player_controller.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SeekButtons extends StatefulWidget {
   final CustomVideoPlayerController customVideoPlayerController;
+
   const SeekButtons({Key? key, required this.customVideoPlayerController})
       : super(key: key);
 
@@ -37,7 +36,7 @@ class _SeekButtonsState extends State<SeekButtons> {
       child: _areControlsVisible
           ? Center(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Material(
                     color: Colors.black12,
@@ -52,37 +51,6 @@ class _SeekButtonsState extends State<SeekButtons> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 15),
-                  ValueListenableBuilder<bool>(
-                      valueListenable: widget.customVideoPlayerController.isPlayingNotifier,
-                      builder: (context, isPlaying, _) {
-                        return GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () => onPlayPause(isPlaying),
-                          child: isPlaying
-                              ? Material(
-                            color: Colors.black12,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
-                            child: const Icon(
-                              CupertinoIcons.pause,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          )
-                              :  Material(
-                            color: Colors.black12,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
-                            child: const Icon(
-                              CupertinoIcons.play,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          ),
-                        );
-                      }),
-                  const SizedBox(width: 15),
                   Material(
                     color: Colors.black12,
                     shape: RoundedRectangleBorder(
@@ -128,20 +96,6 @@ class _SeekButtonsState extends State<SeekButtons> {
               currentPosition.inMicroseconds - seekDuration.inMicroseconds);
       widget.customVideoPlayerController.videoPlayerController
           .seekTo(seekResult);
-    }
-  }
-
-  void onPlayPause(bool isPlaying) async {
-    if (isPlaying) {
-      await widget.customVideoPlayerController.videoPlayerController.pause();
-    } else {
-      if (widget.customVideoPlayerController.customVideoPlayerSettings.playOnlyOnce &&
-          widget.customVideoPlayerController.playedOnceNotifier.value) {
-        return;
-      } else {
-        await widget.customVideoPlayerController.videoPlayerController.play();
-        //widget.fadeOutOnPlay();
-      }
     }
   }
 }

@@ -54,7 +54,7 @@ class _VideoSettingsQualityDialogState
             const SizedBox(
               height: 8,
             ),
-            /*Flexible(
+            Flexible(
               child: ListView(
                 controller: ScrollController(),
                 padding: const EdgeInsets.all(0),
@@ -78,7 +78,7 @@ class _VideoSettingsQualityDialogState
                     ),
                 ],
               ),
-            ),*/
+            ),
           ],
         ),
       ),
@@ -100,7 +100,7 @@ class _VideoSettingsQualityDialogState
   }) async {
     if (_getCurrentVideoPlayerSource() != selectedSource) {
       await widget.customVideoPlayerController
-          .switchVideoSource(selectedSource,Duration(seconds: 0));
+          .switchVideoSource(selectedSource);
       widget.updateView();
       //maybe popup was dismissed on barrier tap before
       if (mounted) {

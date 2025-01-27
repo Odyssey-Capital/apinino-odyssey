@@ -1,24 +1,32 @@
 import 'package:appinio_video_player/src/controls/video_settings_popup/video_settings_dialog_item.dart';
 import 'package:appinio_video_player/src/custom_video_player_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:appinio_video_player/appinio_video_player.dart';
 
-class VideoSettingsQualityDialog extends StatefulWidget {
+class VideoSettingsPlaybackSpeedDialog extends StatefulWidget {
   final CustomVideoPlayerController customVideoPlayerController;
-  final Function updateView;
-  const VideoSettingsQualityDialog({
+  const VideoSettingsPlaybackSpeedDialog({
     Key? key,
     required this.customVideoPlayerController,
-    required this.updateView,
   }) : super(key: key);
 
   @override
-  State<VideoSettingsQualityDialog> createState() =>
-      _VideoSettingsQualityDialogState();
+  State<VideoSettingsPlaybackSpeedDialog> createState() =>
+      _VideoSettingsPlaybackSpeedDialogState();
 }
 
-class _VideoSettingsQualityDialogState
-    extends State<VideoSettingsQualityDialog> {
+class _VideoSettingsPlaybackSpeedDialogState
+    extends State<VideoSettingsPlaybackSpeedDialog> {
+  final List<double> _playbackSpeeds = [
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -44,7 +52,7 @@ class _VideoSettingsQualityDialogState
           children: [
             Text(
               widget.customVideoPlayerController.customVideoPlayerSettings
-                  .customVideoPlayerPopupSettings.popupQualityTitle,
+                  .customVideoPlayerPopupSettings.popupPlaybackSpeedTitle,
               style: widget
                   .customVideoPlayerController
                   .customVideoPlayerSettings
@@ -54,58 +62,44 @@ class _VideoSettingsQualityDialogState
             const SizedBox(
               height: 8,
             ),
-            /*Flexible(
+            Flexible(
               child: ListView(
-                controller: ScrollController(),
-                padding: const EdgeInsets.all(0),
                 shrinkWrap: true,
+                padding: const EdgeInsets.all(0),
+                controller: ScrollController(),
                 children: [
-                  for (MapEntry<String, CachedVideoPlayerController> videoSource
-                      in widget.customVideoPlayerController
-                          .additionalVideoSources!.entries)
+                  for (double playbackSpeed in _playbackSpeeds)
                     VideoSettingsDialogItem(
-                      title: videoSource.key,
+                      title: playbackSpeed == 1.0
+                          ? "${playbackSpeed}x (${widget.customVideoPlayerController.customVideoPlayerSettings.customVideoPlayerPopupSettings.defaultPlaybackspeedDescription})"
+                          : "${playbackSpeed}x",
                       popupSettings: widget
                           .customVideoPlayerController
                           .customVideoPlayerSettings
                           .customVideoPlayerPopupSettings,
-                      onPressed: () => _changeVideoQuality(
-                        context: context,
-                        selectedSource: videoSource.key,
-                      ),
-                      selected:
-                          _getCurrentVideoPlayerSource() == videoSource.key,
+                      onPressed: () =>
+                          _changeVideoPlayBackSpeed(context, playbackSpeed),
+                      selected: widget.customVideoPlayerController
+                              .playbackSpeedNotifier.value ==
+                          playbackSpeed,
                     ),
                 ],
               ),
-            ),*/
+            )
           ],
         ),
       ),
     );
   }
 
-  String _getCurrentVideoPlayerSource() {
-    return widget.customVideoPlayerController.additionalVideoSources!.entries
-        .toList()
-        .firstWhere((element) =>
-            element.value ==
-            widget.customVideoPlayerController.videoPlayerController)
-        .key;
-  }
-
-  void _changeVideoQuality({
-    required BuildContext context,
-    required String selectedSource,
-  }) async {
-    if (_getCurrentVideoPlayerSource() != selectedSource) {
-      await widget.customVideoPlayerController
-          .switchVideoSource(selectedSource,Duration(seconds: 0));
-      widget.updateView();
-      //maybe popup was dismissed on barrier tap before
-      if (mounted) {
-        setState(() {});
-      }
+  void _changeVideoPlayBackSpeed(
+    BuildContext context,
+    double playbackSpeed,
+  ) {
+    widget.customVideoPlayerController.videoPlayerController
+        .setPlaybackSpeed(playbackSpeed);
+    if (mounted) {
+      setState(() {});
     }
   }
 }

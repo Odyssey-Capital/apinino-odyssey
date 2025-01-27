@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:appinio_video_player/appinio_video_player.dart';
-import 'package:appinio_video_player/src/embedded_video_player.dart';
 import 'package:appinio_video_player/src/fullscreen_video_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +9,7 @@ import 'package:appinio_video_player/src/models/custom_video_player_settings.dar
 /// The extension on the class is able to call private methods
 /// only the package can use these methods and not the public beacuse of the hide keyword in the package exports
 extension ProtectedCustomVideoPlayerController on CustomVideoPlayerController {
-  Future<void> Function(String,Duration?) get switchVideoSource => _switchVideoSource;
+  Future<void> Function(String) get switchVideoSource => _switchVideoSource;
 
   ValueNotifier<Duration> get videoProgressNotifier => _videoProgressNotifier;
 
@@ -35,10 +33,10 @@ class CustomVideoPlayerController {
   final Map<String, CachedVideoPlayerController>? additionalVideoSources;
   final ValueNotifier<bool> areControlsVisible = ValueNotifier<bool>(true);
 
-  Future<void> switchSource(String sourceKey,{Duration? playedDuration}) async {
+  Future<void> switchSource(String sourceKey) async {
     assert(additionalVideoSources != null &&
         additionalVideoSources!.containsKey(sourceKey));
-    switchVideoSource(sourceKey,playedDuration);
+    switchVideoSource(sourceKey);
   }
 
   CustomVideoPlayerController({
@@ -143,19 +141,17 @@ class CustomVideoPlayerController {
     }
   }
 
-  Future<void> _switchVideoSource(String selectedSource,Duration? playedDuration) async {
+  Future<void> _switchVideoSource(String selectedSource) async {
     CachedVideoPlayerController? newSource =
         additionalVideoSources![selectedSource];
     if (newSource != null) {
-      Duration _playedDuration = playedDuration ?? videoPlayerController.value.position;
+      Duration _playedDuration = videoPlayerController.value.position;
       double _playbackSpeed = videoPlayerController.value.playbackSpeed;
       bool _wasPlaying = videoPlayerController.value.isPlaying;
       videoPlayerController.pause();
       videoPlayerController.removeListener(_videoListeners);
       videoPlayerController = newSource;
-      if(videoPlayerController.value.isInitialized == false) {
-        await videoPlayerController.initialize();
-      }
+      await videoPlayerController.initialize();
       videoPlayerController.addListener(
           _videoListeners); // add listeners to new video controller
       if (isFullscreen) {
@@ -252,7 +248,7 @@ class CustomVideoPlayerController {
     videoPlayerController.removeListener(_videoListeners);
     _timer?.cancel();
     _timer = null;
-    _updateViewAfterFullscreen = null;
+
     _isPlayingNotifier.dispose();
     _videoProgressNotifier.dispose();
     _playbackSpeedNotifier.dispose();
